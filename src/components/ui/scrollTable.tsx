@@ -46,7 +46,6 @@ export default async function ScrollableTable() {
             <TableHead className="text-white/[.90]">
               Second Preference
             </TableHead>
-            <TableHead className="text-white/[.90]">Submitted</TableHead>
             <TableHead className="text-white/[.90]">Created At</TableHead>
           </TableRow>
         </TableHeader>
@@ -54,24 +53,28 @@ export default async function ScrollableTable() {
       <ScrollArea className="h-[250px]">
         <Table className="text-white/[.90]">
           <TableBody>
-            {users?.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="text-white/[.90]">{user.name}</TableCell>
-                <TableCell className="text-white/[.90]">{user.email}</TableCell>
-                <TableCell className="text-white/[.90]">
-                  {user.firstPreference}
-                </TableCell>
-                <TableCell className="text-white/[.90]">
-                  {user.secondPreference}
-                </TableCell>
-                <TableCell className="text-white/[.90]">
-                  {user.submitted ? "Yes" : "No"}
-                </TableCell>
-                <TableCell className="text-white/[.90]">
-                  {new Date(user.created_at).toLocaleDateString()}
-                </TableCell>
-              </TableRow>
-            ))}
+            {users?.map(
+              (user) =>
+                user.submitted && (
+                  <TableRow key={user.id}>
+                    <TableCell className="text-white/[.90]">
+                      {user.name}
+                    </TableCell>
+                    <TableCell className="text-white/[.90]">
+                      {user.email}
+                    </TableCell>
+                    <TableCell className="text-white/[.90]">
+                      {user.firstPreference}
+                    </TableCell>
+                    <TableCell className="text-white/[.90]">
+                      {user.secondPreference}
+                    </TableCell>
+                    <TableCell className="text-white/[.90]">
+                      {new Date(user.created_at).toLocaleDateString()}
+                    </TableCell>
+                  </TableRow>
+                )
+            )}
           </TableBody>
         </Table>
       </ScrollArea>
