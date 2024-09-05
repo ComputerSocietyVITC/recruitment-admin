@@ -3,7 +3,7 @@
 import { createClient } from "@/utils/supabase/client";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Department } from "@/lib/Departments";
+import { Department } from "@/app/data/Departments";
 import TableComponent from "./TableComponent";
 
 interface User {
@@ -49,7 +49,7 @@ export default function DepartmentPage() {
 
   return (
     <div className="px-2">
-      <h1 className="text-2xl text-black py-4">
+      <h1 className="text-3xl font-extrabold py-4">
         {firstPreference || "Unknown Department"}
       </h1>
       <TableComponent users={users} />
