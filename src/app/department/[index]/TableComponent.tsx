@@ -40,12 +40,10 @@ export default function TableComponent({ users }: { users: User[] }) {
               (user) =>
                 user.submitted && (
                   <TableRow key={user.id}>
-                    <TableCell className="text-white/[.90]">
+                    <TableCell destination={`/user/${user.id}`}>
                       {user.name}
                     </TableCell>
-                    <TableCell className="text-white/[.90]">
-                      {user.email}
-                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
                   </TableRow>
                 )
             )}
