@@ -27,10 +27,30 @@ interface User {
   pointsPrefTwo: number;
 }
 
+interface AnswerQuestion {
+  id: string;
+  questionId: string;
+  userid: string;
+  response: string;
+  points: number;
+}
+
+interface Question {
+  id: string;
+  question: string;
+  options: string[];
+  department: string;
+  type: string;
+}
+
 export default function UserPage() {
   const params = useParams();
   const userid = params?.userid;
   const [user, setUser] = useState<User | null>(null);
+  const [answerQuestions, setAnswerQuestions] = useState<
+    AnswerQuestion[] | null
+  >(null);
+  const [questions, setQuestions] = useState<Question[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -52,6 +72,43 @@ export default function UserPage() {
     if (userid) {
       fetchUser();
     }
+  }, [userid]);
+
+  useEffect(() => {
+    const fetchAnswerQuestions = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from<AnswerQuestion>("AnswerMapping")
+        .select("*")
+        .eq("userId", userid);
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setAnswerQuestions(data);
+      }
+    };
+
+    if (userid) {
+      fetchAnswerQuestions();
+    }
+  }, [userid]);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from<Question>("Question")
+        .select("*");
+
+      if (error) {
+        setError(error.message);
+      } else {
+        setQuestions(data);
+      }
+    };
+
+    fetchQuestions();
   }, [userid]);
 
   if (error) {
@@ -92,6 +149,42 @@ export default function UserPage() {
                 </TableCell>
               </TableRow>
             )}
+          </TableBody>
+        </Table>
+      </ScrollArea>
+
+      <h2 className="text-white mt-4">Answer Questions</h2>
+      <Table className="text-white/[.90]">
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-white/[.90]">Question</TableHead>
+            <TableHead className="text-white/[.90]">Response</TableHead>
+            <TableHead className="text-white/[.90]">Points</TableHead>
+          </TableRow>
+        </TableHeader>
+      </Table>
+      <ScrollArea className="h-[250px]">
+        <Table className="text-white/[.90]">
+          <TableBody>
+            {answerQuestions?.map((answerQuestion) => {
+              const mQuestion = questions?.find(
+                (question) => question.id === answerQuestion.questionId
+              );
+
+              return (
+                <TableRow key={answerQuestion.id}>
+                  <TableCell className="text-white/[.90]">
+                    {mQuestion?.question}
+                  </TableCell>
+                  <TableCell className="text-white/[.90]">
+                    {answerQuestion.response}
+                  </TableCell>
+                  <TableCell className="text-white/[.90]">
+                    {answerQuestion.points}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
           </TableBody>
         </Table>
       </ScrollArea>
