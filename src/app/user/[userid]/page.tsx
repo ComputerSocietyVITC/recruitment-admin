@@ -28,7 +28,8 @@ interface User {
 }
 
 export default function UserPage() {
-  const { id } = useParams();
+  const params = useParams();
+  const userid = params?.userid;
   const [user, setUser] = useState<User | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -38,7 +39,7 @@ export default function UserPage() {
       const { data, error } = await supabase
         .from<User>("User")
         .select("*")
-        .eq("id", id)
+        .eq("id", userid)
         .single();
 
       if (error) {
@@ -48,10 +49,10 @@ export default function UserPage() {
       }
     };
 
-    if (id) {
+    if (userid) {
       fetchUser();
     }
-  }, [id]);
+  }, [userid]);
 
   if (error) {
     console.error("Error fetching user:", error);

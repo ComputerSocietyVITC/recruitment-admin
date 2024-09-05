@@ -56,18 +56,12 @@ export default async function ScrollableTable() {
               (user) =>
                 user.submitted && (
                   <TableRow key={user.id}>
-                    <TableCell className="text-white/[.90]">
+                    <TableCell destination={`/user/${user.id}`}>
                       {user.name}
                     </TableCell>
-                    <TableCell className="text-white/[.90]">
-                      {user.email}
-                    </TableCell>
-                    <TableCell className="text-white/[.90]">
-                      {user.firstPreference}
-                    </TableCell>
-                    <TableCell className="text-white/[.90]">
-                      {user.secondPreference}
-                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>{user.firstPreference}</TableCell>
+                    <TableCell>{user.secondPreference}</TableCell>
                   </TableRow>
                 )
             )}
