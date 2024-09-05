@@ -46,7 +46,6 @@ export default async function ScrollableTable() {
             <TableHead className="text-white/[.90]">
               Second Preference
             </TableHead>
-            <TableHead className="text-white/[.90]">Created At</TableHead>
           </TableRow>
         </TableHeader>
       </Table>
@@ -68,9 +67,6 @@ export default async function ScrollableTable() {
                     </TableCell>
                     <TableCell className="text-white/[.90]">
                       {user.secondPreference}
-                    </TableCell>
-                    <TableCell className="text-white/[.90]">
-                      {new Date(user.created_at).toLocaleDateString()}
                     </TableCell>
                   </TableRow>
                 )
