@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Montserrat } from "next/font/google";
-const montserrat = Montserrat({ subsets: ["latin"] });
+import { Inter } from "next/font/google";
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Admin Page IEEECS",
@@ -16,7 +16,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`bg-gradient-to-r from-black via-[#04101d] to-black ${montserrat.className} text-white min-h-screen flex flex-col`}
+        className={`bg-slate-900 ${inter.className} text-white min-h-screen flex flex-col p-4`}
       >
         {children}
       </body>

@@ -33,7 +33,7 @@ export default function TableComponent({ users }: { users: User[] }) {
           </TableRow>
         </TableHeader>
       </Table>
-      <ScrollArea className="h-[250px]">
+      <ScrollArea>
         <Table className="text-white/[.90]">
           <TableBody>
             {users?.map(

@@ -48,7 +48,7 @@ export default function DepartmentPage() {
   }, [index]);
 
   return (
-    <div className="px-2">
+    <div>
       <h1 className="text-3xl font-extrabold py-4">
         {firstPreference || "Unknown Department"}
       </h1>
