@@ -1,17 +1,10 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
+import UserCard from "@/components/UserCard";
+import QACard from "@/components/QACard";
 
 interface User {
   id: string;
@@ -30,164 +23,99 @@ interface User {
 interface AnswerQuestion {
   id: string;
   questionId: string;
-  userid: string;
+  userId: string;
   response: string;
   points: number;
-}
-
-interface Question {
-  id: string;
-  question: string;
-  options: string[];
-  department: string;
-  type: string;
+  questionText?: string;
 }
 
 export default function UserPage() {
-  const params = useParams();
-  const userid = params?.userid;
+  const { userid } = useParams();
   const [user, setUser] = useState<User | null>(null);
   const [answerQuestions, setAnswerQuestions] = useState<
     AnswerQuestion[] | null
   >(null);
-  const [questions, setQuestions] = useState<Question[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from<User>("User")
+    const fetchData = async () => {
+      // Fetch user data
+      const { data: userData, error: userError } = await supabase
+        .from("User")
         .select("*")
         .eq("id", userid)
         .single();
 
-      if (error) {
-        setError(error.message);
-      } else {
-        setUser(data);
+      if (userError) {
+        setError(userError.message);
+        setLoading(false);
+        return;
       }
+
+      if (userData) {
+        setUser(userData);
+      }
+
+      // Fetch answer questions
+      const { data: answerQuestionData, error: answerQuestionError } =
+        await supabase.from("AnswerMapping").select("*").eq("userId", userid);
+
+      if (answerQuestionError) {
+        setError(answerQuestionError.message);
+        setLoading(false);
+        return;
+      }
+
+      // Fetch question text for each answer
+      const enrichedAnswerQuestions = await Promise.all(
+        answerQuestionData.map(async (answerQuestion: AnswerQuestion) => {
+          const { data: questionData, error: questionError } = await supabase
+            .from("Question")
+            .select("question")
+            .eq("id", answerQuestion.questionId)
+            .single();
+
+          if (questionError) {
+            setError(questionError.message);
+            return answerQuestion;
+          }
+
+          return {
+            ...answerQuestion,
+            questionText: questionData?.question || "Unknown Question",
+          };
+        })
+      );
+
+      setAnswerQuestions(enrichedAnswerQuestions);
+      setLoading(false);
     };
 
-    if (userid) {
-      fetchUser();
-    }
-  }, [userid]);
+    fetchData();
+  }, [userid, supabase]);
 
-  useEffect(() => {
-    const fetchAnswerQuestions = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from<AnswerQuestion>("AnswerMapping")
-        .select("*")
-        .eq("userId", userid);
-
-      if (error) {
-        setError(error.message);
-      } else {
-        setAnswerQuestions(data);
-      }
-    };
-
-    if (userid) {
-      fetchAnswerQuestions();
-    }
-  }, [userid]);
-
-  useEffect(() => {
-    const fetchQuestions = async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from<Question>("Question")
-        .select("*");
-
-      if (error) {
-        setError(error.message);
-      } else {
-        setQuestions(data);
-      }
-    };
-
-    fetchQuestions();
-  }, [userid]);
-
-  if (error) {
-    console.error("Error fetching user:", error);
-    return <div>Error loading data</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error loading data: {error}</div>;
 
   return (
-    <div className="rounded-md border bg-[#04101D] p-4">
-      <Table className="text-white/[.90]">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-white/[.90]">Name</TableHead>
-            <TableHead className="text-white/[.90]">Email</TableHead>
-            <TableHead className="text-white/[.90]">First Preference</TableHead>
-            <TableHead className="text-white/[.90]">
-              Second Preference
-            </TableHead>
-            <TableHead className="text-white/[.90]">Created At</TableHead>
-          </TableRow>
-        </TableHeader>
-      </Table>
-      <ScrollArea className="h-[250px]">
-        <Table className="text-white/[.90]">
-          <TableBody>
-            {user?.submitted && (
-              <TableRow key={user.id}>
-                <TableCell className="text-white/[.90]">{user.name}</TableCell>
-                <TableCell className="text-white/[.90]">{user.email}</TableCell>
-                <TableCell className="text-white/[.90]">
-                  {user.firstPreference}
-                </TableCell>
-                <TableCell className="text-white/[.90]">
-                  {user.secondPreference}
-                </TableCell>
-                <TableCell className="text-white/[.90]">
-                  {new Date(user.created_at).toLocaleDateString()}
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </ScrollArea>
-
-      <h2 className="text-white mt-4">Answer Questions</h2>
-      <Table className="text-white/[.90]">
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-white/[.90]">Question</TableHead>
-            <TableHead className="text-white/[.90]">Response</TableHead>
-            <TableHead className="text-white/[.90]">Points</TableHead>
-          </TableRow>
-        </TableHeader>
-      </Table>
-      <ScrollArea className="h-[250px]">
-        <Table className="text-white/[.90]">
-          <TableBody>
-            {answerQuestions?.map((answerQuestion) => {
-              const mQuestion = questions?.find(
-                (question) => question.id === answerQuestion.questionId
-              );
-
-              return (
-                <TableRow key={answerQuestion.id}>
-                  <TableCell className="text-white/[.90]">
-                    {mQuestion?.question}
-                  </TableCell>
-                  <TableCell className="text-white/[.90]">
-                    {answerQuestion.response}
-                  </TableCell>
-                  <TableCell className="text-white/[.90]">
-                    {answerQuestion.points}
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </ScrollArea>
+    <div className="text-white/[.90]">
+      <>
+        <h1 className="text-3xl font-bold mb-2">User</h1>
+        <UserCard user={user} />
+        <h2 className="text-3xl font-bold mt-4 mb-2">Answers</h2>
+        {answerQuestions && (
+          <ul>
+            {answerQuestions.map((answerQuestion) => (
+              <li key={answerQuestion.id}>
+                <QACard {...answerQuestion} />
+              </li>
+            ))}
+          </ul>
+        )}
+      </>
     </div>
   );
 }
