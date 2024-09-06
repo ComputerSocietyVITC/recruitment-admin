@@ -1,17 +1,10 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/utils/supabase/client";
 import UserCard from "@/components/UserCard";
+import QACard from "@/components/QACard";
 
 interface User {
   id: string;
@@ -33,7 +26,7 @@ interface AnswerQuestion {
   userId: string;
   response: string;
   points: number;
-  questionText?: string; // Add questionText field to store the fetched question
+  questionText?: string;
 }
 
 export default function UserPage() {
@@ -110,16 +103,14 @@ export default function UserPage() {
   return (
     <div className="text-white/[.90]">
       <>
+        <h1 className="text-3xl font-bold mb-2">User</h1>
         <UserCard user={user} />
-        <h2 className="mt-8 mb-4">Answers</h2>
+        <h2 className="text-3xl font-bold mt-4 mb-2">Answers</h2>
         {answerQuestions && (
           <ul>
             {answerQuestions.map((answerQuestion) => (
-              <li key={answerQuestion.id} className="mb-4">
-                <h3>{answerQuestion.questionText}</h3>
-                <p>{answerQuestion.response}</p>
-                <h3>Points</h3>
-                <p>{answerQuestion.points}</p>
+              <li key={answerQuestion.id}>
+                <QACard {...answerQuestion} />
               </li>
             ))}
           </ul>
