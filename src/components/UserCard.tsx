@@ -1,10 +1,17 @@
 import React from "react";
 
 interface User {
+  id: string;
   name: string;
   email: string;
   firstPreference: string;
   secondPreference: string;
+  submitted: boolean;
+  created_at: string;
+  evaluatedPrefOne: boolean;
+  evaluatedPrefTwo: boolean;
+  pointsPrefOne: number;
+  pointsPrefTwo: number;
 }
 
 const UserCard = ({ user }: { user: User }) => {
@@ -25,6 +32,26 @@ const UserCard = ({ user }: { user: User }) => {
       <h2 className="py-1">
         <div className="font-bold inline-block">Second Preference</div>:{" "}
         {secondPreference}
+      </h2>
+      <h2 className="py-1">
+        <div className="font-bold inline-block">Submitted</div>:{" "}
+        {user.submitted ? "Yes" : "No"}
+      </h2>
+      <h2 className="py-1">
+        <div className="font-bold inline-block">Evaluated Preference 1</div>:{" "}
+        {user.evaluatedPrefOne ? "Yes" : "No"}
+      </h2>
+      <h2 className="py-1">
+        <div className="font-bold inline-block">Evaluated Preference 2</div>:{" "}
+        {user.evaluatedPrefTwo ? "Yes" : "No"}
+      </h2>
+      <h2 className="py-1">
+        <div className="font-bold inline-block">Points Preference 1</div>:{" "}
+        {user.pointsPrefOne}
+      </h2>
+      <h2 className="py-1">
+        <div className="font-bold inline-block">Points Preference 2</div>:{" "}
+        {user.pointsPrefTwo}
       </h2>
     </div>
   );
