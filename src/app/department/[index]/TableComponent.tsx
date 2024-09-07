@@ -17,18 +17,32 @@ interface User {
 interface TableComponentProps {
   users: User[];
   showOnlyNonEvaluated: boolean;
+  showOnlyEvaluated: boolean;
 }
 
 export default function TableComponent({
   users,
   showOnlyNonEvaluated,
+  showOnlyEvaluated,
 }: TableComponentProps) {
-  const filteredUsers = users.filter(
-    (user) =>
-      user.submitted &&
-      (!showOnlyNonEvaluated ||
-        !(user.evaluatedPrefOne && user.evaluatedPrefTwo))
+  // Sort users alphabetically by name (case-insensitive)
+  const sortedUsers = users.sort((a, b) =>
+    a.name.toLowerCase().localeCompare(b.name.toLowerCase())
   );
+
+  // Filter users based on submission and evaluation status
+  const filteredUsers = sortedUsers.filter((user) => {
+    const isNonEvaluated =
+      showOnlyNonEvaluated && !(user.evaluatedPrefOne && user.evaluatedPrefTwo);
+    const isEvaluated =
+      showOnlyEvaluated && user.evaluatedPrefOne && user.evaluatedPrefTwo;
+
+    return (
+      user.submitted &&
+      (!showOnlyNonEvaluated || isNonEvaluated) &&
+      (!showOnlyEvaluated || isEvaluated)
+    );
+  });
 
   return (
     <div className="rounded-md border border-gray-700 bg-[#04101D]">
@@ -49,8 +63,10 @@ export default function TableComponent({
               key={user.id}
               className={`border-b border-gray-700 hover:bg-gray-800 cursor-pointer ${
                 user.evaluatedPrefOne && user.evaluatedPrefTwo
-                  ? "bg-teal-950"
-                  : ""
+                  ? "bg-teal-950" // Both preferences evaluated
+                  : user.evaluatedPrefOne || user.evaluatedPrefTwo
+                  ? "bg-blue-950" // Either one of the preferences evaluated
+                  : "" // Neither evaluated
               }`}
             >
               <Link href={`/user/${user.id}`} className="contents">

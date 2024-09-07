@@ -28,6 +28,7 @@ export default function DepartmentPage() {
   const firstPreference = Department[parseInt(index, 10)];
   const [users, setUsers] = useState<User[]>([]);
   const [showOnlyNonEvaluated, setShowOnlyNonEvaluated] = useState(false);
+  const [showOnlyEvaluated, setShowOnlyEvaluated] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -54,11 +55,28 @@ export default function DepartmentPage() {
       <div className="flex w-full justify-between pb-4">
         <h1 className="text-3xl font-extrabold">
           {firstPreference || "Unknown Department"}
+          {` (showing ${
+            showOnlyNonEvaluated
+              ? "non-evaluated"
+              : showOnlyEvaluated
+              ? "evaluated"
+              : "all"
+          } users)`}
         </h1>
         <div>
           <Button
             text={showOnlyNonEvaluated ? "Show All" : "Show Only Non-Evaluated"}
-            onClick={() => setShowOnlyNonEvaluated(!showOnlyNonEvaluated)}
+            onClick={() => {
+              setShowOnlyNonEvaluated(!showOnlyNonEvaluated);
+              setShowOnlyEvaluated(false);
+            }}
+          />
+          <Button
+            text={showOnlyEvaluated ? "Show All" : "Show Only Evaluated"}
+            onClick={() => {
+              setShowOnlyNonEvaluated(false);
+              setShowOnlyEvaluated(!showOnlyEvaluated);
+            }}
           />
           <Button
             text="Back to Home"
@@ -69,6 +87,7 @@ export default function DepartmentPage() {
       <TableComponent
         users={users}
         showOnlyNonEvaluated={showOnlyNonEvaluated}
+        showOnlyEvaluated={showOnlyEvaluated}
       />
     </div>
   );
