@@ -2,7 +2,7 @@
 
 import { useParams } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase";
 import UserCard from "@/components/UserCard";
 import QACard from "@/components/QACard";
 import Button from "@/components/Button";
