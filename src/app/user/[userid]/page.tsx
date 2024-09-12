@@ -292,7 +292,7 @@ export default function UserPage() {
             }}
           />
         </div>
-        <UserCard user={user} />
+        {user && <UserCard user={user} />}
         {/* First Preference Questions */}
         <h2 className="text-3xl font-bold mt-6 mb-4">
           {user?.firstPreference} Questions

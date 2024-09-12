@@ -24,14 +24,17 @@ interface User {
 export default function DepartmentPage() {
   const supabase = createClient();
   const params = useParams();
-  const index = params?.index;
-  const firstPreference = Department[parseInt(index, 10)];
+  const index = Array.isArray(params?.index) ? params.index[0] : params?.index;
+
+  const firstPreference = index ? Department[parseInt(index, 10)] : undefined;
   const [users, setUsers] = useState<User[]>([]);
   const [showOnlyNonEvaluated, setShowOnlyNonEvaluated] = useState(false);
   const [showOnlyEvaluated, setShowOnlyEvaluated] = useState(false);
 
   useEffect(() => {
     const fetchUsers = async () => {
+      if (!firstPreference) return;
+
       const { data, error } = await supabase
         .from("User")
         .select("*")
@@ -48,7 +51,7 @@ export default function DepartmentPage() {
     };
 
     fetchUsers();
-  }, [firstPreference, index, supabase]);
+  }, [firstPreference, supabase]);
 
   return (
     <div>
