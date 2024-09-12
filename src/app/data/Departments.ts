@@ -10,8 +10,9 @@ export function getKeyFromValue(
   value: string
 ): number | undefined {
   for (const key of Object.keys(record)) {
-    if (record[key] === value) {
-      return Number(key);
+    const numericKey = Number(key); // Convert key to a number
+    if (record[numericKey] === value) {
+      return numericKey;
     }
   }
   return undefined;
