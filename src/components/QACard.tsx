@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createClient } from "@/utils/supabase/client";
+import { createClient } from "@/utils/supabase";
 
 interface AnswerQuestionProps {
   id: string;

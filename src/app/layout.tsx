@@ -1,18 +1,32 @@
-import type { Metadata } from "next";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+
 import "./globals.css";
 import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-  title: "Admin Page IEEECS",
-  description: "Admin page for IEEECs",
-};
+import { createClient } from "@/utils/supabase";
 
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const supabase = createClient();
+  const router = useRouter();
+
+  useEffect(() => {
+    const session = supabase.auth.getSession();
+
+    session.then((data) => {
+      if (data.data.session === null) {
+        router.push("/login");
+      }
+    });
+  }, []);
+
   return (
     <html lang="en">
       <body

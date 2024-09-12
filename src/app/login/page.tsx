@@ -1,40 +1,61 @@
 "use client";
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { verifyPassword } from '../../lib/verifyPassword'; // Adjust the path as needed
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+
+import { createClient } from "@/utils/supabase";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const supabase = createClient();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const router = useRouter();
+
+  useEffect(() => {
+    const session = supabase.auth.getSession();
+
+    session.then((data) => {
+      if (data.data.session !== null) {
+        router.push("/");
+      }
+    });
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
-      const isAuthenticated = await verifyPassword(email, password);
+      const { data, error } = await supabase.auth.signInWithPassword({
+        password,
+        email,
+      });
 
-      if (isAuthenticated) {
-        router.push('/dashboard');
+      if (!error) {
+        router.push("/");
       } else {
-        setError('Invalid email or password');
+        setError("Invalid email or password");
       }
     } catch (error) {
-      console.error('Login error:', error);
-      setError('An unexpected error occurred. Please try again.');
+      console.error("Login error:", error);
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-900">
       <div className="w-full max-w-md p-8 bg-gray-800 shadow-lg rounded-lg">
-        <h1 className="text-2xl font-bold text-center mb-6 text-white">Login</h1>
+        <h1 className="text-2xl font-bold text-center mb-6 text-white">
+          Login
+        </h1>
         {error && <p className="text-red-500 text-center mb-4">{error}</p>}
         <form onSubmit={handleLogin}>
           <div className="mb-4">
-            <label htmlFor="email" className="block text-sm font-medium text-gray-300">
+            <label
+              htmlFor="email"
+              className="block text-sm font-medium text-gray-300"
+            >
               Email
             </label>
             <input
@@ -48,7 +69,10 @@ export default function Login() {
             />
           </div>
           <div className="mb-6">
-            <label htmlFor="password" className="block text-sm font-medium text-gray-300">
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-300"
+            >
               Password
             </label>
             <input
